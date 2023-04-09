@@ -24,13 +24,12 @@ CREATE TABLE "user" (
   "email" string UNIQUE,
   "telephone" varchar,
   "gender" gender,
-  "kota" int,
+  "city_id" int,
   "user_type" user_types
 );
 
 CREATE TABLE "partner" (
   "partner_id" int PRIMARY KEY NOT NULL,
-  "rating" int,
   "income" decimal
 );
 
@@ -40,6 +39,7 @@ CREATE TABLE "booking" (
   "partner_id" int NOT NULL,
   "schedule" datatime DEFAULT (now()),
   "duration" time,
+  "city_id" int NOT NULL,
   "category" int,
   "open" bool,
   "closed" bool,
@@ -62,17 +62,37 @@ CREATE TABLE "review" (
   "description" varchar
 );
 
-COMMENT ON COLUMN "partner"."rating" IS 'rating 1-5';
+CREATE UNIQUE INDEX ON "city" ("id");
+
+CREATE UNIQUE INDEX ON "category" ("id");
+
+CREATE UNIQUE INDEX ON "user" ("id");
+
+CREATE INDEX "by_city_id" ON "user" ("city_id");
+
+CREATE UNIQUE INDEX ON "partner" ("partner_id");
+
+CREATE UNIQUE INDEX ON "booking" ("id");
+
+CREATE INDEX ON "booking" ("booker_id");
+
+CREATE UNIQUE INDEX ON "invoice" ("id");
+
+CREATE INDEX ON "invoice" ("booker_id");
+
+CREATE UNIQUE INDEX ON "review" ("booking_id");
 
 COMMENT ON COLUMN "review"."rating" IS 'range 1-5';
 
-ALTER TABLE "user" ADD FOREIGN KEY ("kota") REFERENCES "city" ("id");
+ALTER TABLE "user" ADD FOREIGN KEY ("city_id") REFERENCES "city" ("id");
 
 ALTER TABLE "partner" ADD FOREIGN KEY ("partner_id") REFERENCES "user" ("id");
 
 ALTER TABLE "booking" ADD FOREIGN KEY ("booker_id") REFERENCES "user" ("id");
 
 ALTER TABLE "booking" ADD FOREIGN KEY ("partner_id") REFERENCES "user" ("id");
+
+ALTER TABLE "booking" ADD FOREIGN KEY ("city_id") REFERENCES "city" ("id");
 
 ALTER TABLE "booking" ADD FOREIGN KEY ("category") REFERENCES "category" ("id");
 
