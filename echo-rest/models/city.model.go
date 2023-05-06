@@ -6,19 +6,19 @@ import (
 	"github.com/PBKKE08/FP-BE/echo-rest/db"
 )
 
-type Category struct {
+type City struct{
 	Id int `json:"id"`
 	Name string `json:"name"`
 }
 
-func FetchAllCategories() (Response, error) {
-	var obj Category
-	var arrobj []Category
+func FetchAllCities() (Response, error) {
+	var obj City
+	var arrobj []City
 	var res Response
 
 	db := db.GetDb()
 
-	sqlStatement := "SELECT * FROM category"
+	sqlStatement := "SELECT * FROM city"
 
 	rows, err := db.Query(sqlStatement)
 	
@@ -44,12 +44,12 @@ func FetchAllCategories() (Response, error) {
 	return res, nil
 }
 
-func PostCategory(name string) (Response, error){
+func PostCity(name string) (Response, error){
 	var res Response
 	var id int
 	db := db.GetDb()
 
-	sqlStatement := `INSERT INTO public.category (name) VALUES ($1) RETURNING id`
+	sqlStatement := `INSERT INTO public.city (name) VALUES ($1) RETURNING id`
 	err := db.QueryRow(sqlStatement, name).Scan(&id)
 	if err != nil{
 		return res, err

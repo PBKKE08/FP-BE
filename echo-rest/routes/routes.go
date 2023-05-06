@@ -14,7 +14,12 @@ func Init() *echo.Echo {
 		return c.String(http.StatusOK, "Hello, this is root echo")
 	})
 
+	//select all
 	e.GET("/category", controllers.FetchAllCategory)
+	e.GET("/city", controllers.FetchAllCities)
+
+	e.POST("/city", controllers.PostCity)
+	e.POST("/category", controllers.PostCategory)
 
 	return e
 }
