@@ -11,7 +11,7 @@ type Category struct {
 	Name string `json:"name"`
 }
 
-func FetchAllCategories() (Response, error) {
+func ReadAllCategories() (Response, error) {
 	var obj Category
 	var arrobj []Category
 	var res Response
@@ -44,7 +44,7 @@ func FetchAllCategories() (Response, error) {
 	return res, nil
 }
 
-func PostCategory(name string) (Response, error){
+func CreateCategory(name string) (Response, error){
 	var res Response
 	var id int
 	db := db.GetDb()
@@ -59,6 +59,46 @@ func PostCategory(name string) (Response, error){
 	res.Message = "Success"
 	res.Data = map[string]int{
 		"last_inserted_id": id,
+	}
+
+	return res, nil
+}
+
+func UpdateCategory (id int, name string) (Response, error){
+	var res Response
+	db := db.GetDb()
+
+	sqlStatement := `UPDATE category SET name = $2 WHERE id = $1 RETURNING id`
+	err := db.QueryRow(sqlStatement, id, name).Scan(&id)
+
+	if err != nil{
+		return res, err
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "Success"
+	res.Data = map[string]int{
+		"last_updated_id": id,
+	}
+
+	return res, nil
+}
+
+func DeleteCategory (id int) (Response, error){
+	var res Response
+	db := db.GetDb()
+
+	sqlStatement := `DELETE FROM public.category WHERE (id = $1) RETURNING id`
+	err := db.QueryRow(sqlStatement, id).Scan(&id)
+
+	if err != nil{
+		return res, err
+	}
+
+	res.Status = http.StatusOK
+	res.Message = "Success"
+	res.Data = map[string]int{
+		"last_deleted_id": id,
 	}
 
 	return res, nil

@@ -15,11 +15,17 @@ func Init() *echo.Echo {
 	})
 
 	//select all
-	e.GET("/category", controllers.FetchAllCategory)
-	e.GET("/city", controllers.FetchAllCities)
+	e.GET("/category", controllers.ReadAllCategories)
+	e.GET("/city", controllers.ReadAllCities)
 
-	e.POST("/city", controllers.PostCity)
-	e.POST("/category", controllers.PostCategory)
+	e.POST("/category", controllers.CreateCategory)
+	e.POST("/city", controllers.CreateCity)
+
+	e.PUT("/category", controllers.UpdateCategory)
+	e.PUT("/city", controllers.UpdateCity)
+
+	e.DELETE("/category", controllers.DeleteCategory)
+	e.DELETE("/city", controllers.DeleteCity)
 
 	return e
 }
