@@ -1,36 +1,32 @@
 package models
 
 import (
+	"database/sql"
 	"net/http"
-
-	"github.com/PBKKE08/FP-BE/echo-rest/db"
 )
 
-type City struct{
-	Id int `json:"id"`
+type City struct {
+	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-func ReadAllCities() (Response, error) {
+func ReadAllCities(db *sql.DB) (Response, error) {
 	var obj City
 	var arrobj []City
 	var res Response
 
-	db := db.GetDb()
-
 	sqlStatement := "SELECT * FROM city"
 
 	rows, err := db.Query(sqlStatement)
-	
-	if(err != nil){
+
+	if err != nil {
 		return res, err
 	}
 	defer rows.Close()
-	
 
 	for rows.Next() {
 		err = rows.Scan(&obj.Id, &obj.Name)
-		if (err != nil){
+		if err != nil {
 			return res, err
 		}
 
@@ -44,14 +40,13 @@ func ReadAllCities() (Response, error) {
 	return res, nil
 }
 
-func CreateCity(name string) (Response, error){
+func CreateCity(db *sql.DB, name string) (Response, error) {
 	var res Response
 	var id int
-	db := db.GetDb()
 
 	sqlStatement := `INSERT INTO public.city (name) VALUES ($1) RETURNING id`
 	err := db.QueryRow(sqlStatement, name).Scan(&id)
-	if err != nil{
+	if err != nil {
 		return res, err
 	}
 
@@ -64,14 +59,13 @@ func CreateCity(name string) (Response, error){
 	return res, nil
 }
 
-func UpdateCity (id int, name string) (Response, error){
+func UpdateCity(db *sql.DB, id int, name string) (Response, error) {
 	var res Response
-	db := db.GetDb()
 
 	sqlStatement := `UPDATE city SET name = $2 WHERE id = $1 RETURNING id`
 	err := db.QueryRow(sqlStatement, id, name).Scan(&id)
 
-	if err != nil{
+	if err != nil {
 		return res, err
 	}
 
@@ -84,14 +78,13 @@ func UpdateCity (id int, name string) (Response, error){
 	return res, nil
 }
 
-func DeleteCity (id int) (Response, error){
+func DeleteCity(db *sql.DB, id int) (Response, error) {
 	var res Response
-	db := db.GetDb()
 
 	sqlStatement := `DELETE FROM public.city WHERE (id = $1) RETURNING id`
 	err := db.QueryRow(sqlStatement, id).Scan(&id)
 
-	if err != nil{
+	if err != nil {
 		return res, err
 	}
 

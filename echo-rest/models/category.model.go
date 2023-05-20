@@ -1,36 +1,32 @@
 package models
 
 import (
+	"database/sql"
 	"net/http"
-
-	"github.com/PBKKE08/FP-BE/echo-rest/db"
 )
 
 type Category struct {
-	Id int `json:"id"`
+	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-func ReadAllCategories() (Response, error) {
+func ReadAllCategories(db *sql.DB) (Response, error) {
 	var obj Category
 	var arrobj []Category
 	var res Response
 
-	db := db.GetDb()
-
 	sqlStatement := "SELECT * FROM category"
 
 	rows, err := db.Query(sqlStatement)
-	
-	if(err != nil){
+
+	if err != nil {
 		return res, err
 	}
 	defer rows.Close()
-	
 
 	for rows.Next() {
 		err = rows.Scan(&obj.Id, &obj.Name)
-		if (err != nil){
+		if err != nil {
 			return res, err
 		}
 
@@ -44,14 +40,13 @@ func ReadAllCategories() (Response, error) {
 	return res, nil
 }
 
-func CreateCategory(name string) (Response, error){
+func CreateCategory(db *sql.DB, name string) (Response, error) {
 	var res Response
 	var id int
-	db := db.GetDb()
 
 	sqlStatement := `INSERT INTO public.category (name) VALUES ($1) RETURNING id`
 	err := db.QueryRow(sqlStatement, name).Scan(&id)
-	if err != nil{
+	if err != nil {
 		return res, err
 	}
 
@@ -64,14 +59,13 @@ func CreateCategory(name string) (Response, error){
 	return res, nil
 }
 
-func UpdateCategory (id int, name string) (Response, error){
+func UpdateCategory(db *sql.DB, id int, name string) (Response, error) {
 	var res Response
-	db := db.GetDb()
 
 	sqlStatement := `UPDATE category SET name = $2 WHERE id = $1 RETURNING id`
 	err := db.QueryRow(sqlStatement, id, name).Scan(&id)
 
-	if err != nil{
+	if err != nil {
 		return res, err
 	}
 
@@ -84,14 +78,13 @@ func UpdateCategory (id int, name string) (Response, error){
 	return res, nil
 }
 
-func DeleteCategory (id int) (Response, error){
+func DeleteCategory(db *sql.DB, id int) (Response, error) {
 	var res Response
-	db := db.GetDb()
 
 	sqlStatement := `DELETE FROM public.category WHERE (id = $1) RETURNING id`
 	err := db.QueryRow(sqlStatement, id).Scan(&id)
 
-	if err != nil{
+	if err != nil {
 		return res, err
 	}
 

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 
@@ -8,53 +9,61 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func ReadAllCities(c echo.Context) error{
-	result, err := models.ReadAllCities()
-	
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string] string{"message": err.Error()})
-	}
+func ReadAllCities(db *sql.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		result, err := models.ReadAllCities(db)
 
-	return c.JSON(http.StatusOK, result)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		}
+
+		return c.JSON(http.StatusOK, result)
+	}
 }
 
-func CreateCity(c echo.Context) error{
-	name := c.FormValue("name")
-	result, err := models.CreateCity(name)
-	
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string] string{"message": err.Error()})
-	}
+func CreateCity(db *sql.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		name := c.FormValue("name")
+		result, err := models.CreateCity(db, name)
 
-	return c.JSON(http.StatusOK, result)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		}
+
+		return c.JSON(http.StatusOK, result)
+	}
 }
 
-func UpdateCity(c echo.Context) error{
-	id, err := strconv.Atoi(c.FormValue("id"))
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string] string{"message": err.Error()})
-	}
+func UpdateCity(db *sql.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id, err := strconv.Atoi(c.FormValue("id"))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		}
 
-	name := c.FormValue("name")
-	
-	result, err := models.UpdateCity(id, name)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string] string{"message": err.Error()})
-	}
+		name := c.FormValue("name")
 
-	return c.JSON(http.StatusOK, result)
+		result, err := models.UpdateCity(db, id, name)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		}
+
+		return c.JSON(http.StatusOK, result)
+	}
 }
 
-func DeleteCity(c echo.Context) error{
-	id, err := strconv.Atoi(c.FormValue("id"))
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string] string{"message": err.Error()})
-	}
+func DeleteCity(db *sql.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id, err := strconv.Atoi(c.FormValue("id"))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		}
 
-	result, err := models.DeleteCity(id)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string] string{"message": err.Error()})
-	}
+		result, err := models.DeleteCity(db, id)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		}
 
-	return c.JSON(http.StatusOK, result)
+		return c.JSON(http.StatusOK, result)
+	}
 }
