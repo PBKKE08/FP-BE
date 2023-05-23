@@ -10,4 +10,4 @@ RUN go install github.com/cosmtrek/air@latest
 
 COPY ./ /app/
 
-CMD "air"
+CMD ["npm", "run", "dev"]

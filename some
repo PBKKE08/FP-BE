@@ -1,0 +1,60 @@
+bismillah, guys, nanya terkait ca + ddd dong
+1. kalo kayak gini kira-kira ok nda y?
+project
+ ├─ app (framework & driver)
+ │   ├─ config.go
+ │   ├─ db.go
+ │   ├─ db_test.go
+ │   ├─ fs.go
+ │   ├─ fs_test.go
+ │   ├─ http_client.go
+ │   ├─ http_client_test.go
+ │   ├─ ...
+ │   └─ validation_test.go
+ ├─ domain
+ │   ├─ ...
+ │   ├─ setting
+ │   │   ├─ rest_handler.go (interface adapter)
+ │   │   ├─ rest_handler_test.go
+ │   │   ├─ model.go (entity)
+ │   │   ├─ service.go (use case)
+ │   │   └─ service_test.go
+ │   ├─ user
+ │   │   ├─ users-grpc_handler.go
+ │   │   ├─ users-grpc_handler_test.go
+ │   │   ├─ users-rest_handler.go
+ │   │   ├─ users-rest_handler_test.go
+ │   │   ├─ users-model.go
+ │   │   ├─ users-model.proto
+ │   │   ├─ users-service.go
+ │   │   ├─ users-service_test.go
+ │   │   ├─ user_roles-http_handler.go
+ │   │   ├─ user_roles-http_handler_test.go
+ │   │   ├─ user_roles-model.go
+ │   │   ├─ user_roles-service.go
+ │   │   └─ user_roles-service_test.go
+ │   ├─ ...
+ │   └─ report
+ │       ├─ balance_sheet-rest_handler.go
+ │       ├─ balance_sheet-rest_handler_test.go
+ │       ├─ balance_sheet-service.go
+ │       ├─ balance_sheet-service_test.go
+ │       ├─ ...
+ │       ├─ profit_loss-rest_handler.go
+ │       ├─ profit_loss-rest_handler_test.go
+ │       ├─ profit_loss-service.go
+ │       └─ profit_loss-service_test.go
+ ├─ .env
+ ├─ Dockerfile
+ ├─ go.mod
+ ├─ go.sum
+ ├─ main.go
+ └─ README.md
+2. domain nya pengen nya sih berdasarkan nama end point nya biar g bingung nyari nya,
+tp bingung penamaan yg nama nya memang lebih dari 1 suku kata, yg aneh kalo dipotong jadi path atau disingkat,
+misalnya profit_loss, ada saran?
+https://go.dev/blog/package-names
+
+3. report kan isi nya cuma query join dari satu tabel ke tabel lain nya
+(tidak merujuk ke domain tertentu tetapi data nya diperoleh dari proses yg dilakukan dari berbagai domain),
+nah yg begitu ideal nya gmn y?
