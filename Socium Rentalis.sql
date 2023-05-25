@@ -24,8 +24,7 @@ CREATE TABLE "user" (
   "email" VARCHAR UNIQUE,
   "telephone" varchar,
   "gender" gender,
-  "city_id" int,
-  "user_type" user_types
+  "password" varchar
 );
 
 CREATE TABLE "partner" (
