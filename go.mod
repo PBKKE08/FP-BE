@@ -6,16 +6,15 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/lib/pq v1.10.8
-	github.com/nyaruka/phonenumbers v1.1.7
 	github.com/redis/rueidis v1.0.4
 	github.com/rs/zerolog v1.29.1
 )
 
 require (
-	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
+	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	golang.org/x/crypto v0.6.0 // indirect

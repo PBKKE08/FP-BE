@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/PBKKE08/FP-BE/echo-rest/routes"
 	"github.com/PBKKE08/FP-BE/infra/instance"
 	"github.com/PBKKE08/FP-BE/pkg"
 	"github.com/labstack/echo/v4"
@@ -42,7 +41,7 @@ func init() {
 }
 
 func main() {
-	db, closeDB := instance.NewPostgreSQL(config.DbURL)
+	_, closeDB := instance.NewPostgreSQL(config.DbURL)
 	_, closeRedis := instance.NewRedis(config.RedisURL)
 	defer func() {
 		if err := closeDB(); err != nil {
@@ -55,7 +54,6 @@ func main() {
 	}()
 
 	server := echo.New()
-	routes.GetRoutes(db, server)
 
 	go func() {
 		if err := server.Start(":" + config.ServerPort); err != nil && err != http.ErrServerClosed {
@@ -64,7 +62,7 @@ func main() {
 	}()
 
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGKILL, syscall.SIGTERM)
+	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	<-quit
 

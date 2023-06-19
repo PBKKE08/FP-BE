@@ -1,0 +1,43 @@
+CREATE TABLE cities (
+    id CHAR(36) NOT NULL,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE users (
+  id CHAR(36) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  telephone VARCHAR(20) NOT NULL,
+  gender ENUM('Male', 'Female') NOT NULL,
+  city_id CHAR(36) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_city FOREIGN KEY (city_id) REFERENCES cities(id)
+);
+
+CREATE TABLE partners (
+  id CHAR(36) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  telephone VARCHAR(20) NOT NULL,
+  gender ENUM('Male', 'Female') NOT NULL,
+  price VARCHAR(100) NOT NULL,
+  city_id CHAR(36) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_city FOREIGN KEY (city_id) REFERENCES cities(id)
+);
+
+CREATE TABLE reviews (
+  id CHAR(36) NOT NULL,
+  user_id CHAR(36) NOT NULL,
+  partner_id CHAR(36) NOT NULL,
+  rating INT NOT NULL,
+  comment VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id),
+  CONSTRAINT fk_partner FOREIGN KEY (partner_id) REFERENCES partners(id)
+);
+
+
