@@ -22,5 +22,13 @@ services:
     ports:
       - 6666:6379
 
+  mailhog:
+    container_name: mailhog
+    image: 'mailhog/mailhog:latest'
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    restart: always
+
 volumes:
   dbdata:

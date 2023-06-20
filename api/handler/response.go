@@ -1,6 +1,9 @@
 package handler
 
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
 var (
 	ErrInternal = errors.New("internal server error")
@@ -26,4 +29,8 @@ func ResponseWithData(code int, msg string, data any) map[string]any {
 	}
 
 	return m
+}
+
+func isInternalErr(err error) bool {
+	return strings.Contains(err.Error(), "internal server error")
 }

@@ -1,4 +1,4 @@
-package command
+package beri_review
 
 type BeriReviewRequest struct {
 	PenggunaID string `json:"user_id"`

@@ -47,3 +47,18 @@ func (r *PenggunaRepository) ByID(ctx context.Context, id pengguna.ID) (pengguna
 
 	return result, nil
 }
+
+func (r *PenggunaRepository) Save(ctx context.Context, user pengguna.Pengguna) error {
+	qr :=
+		`
+		INSERT INTO users (id, name, email, telephone, gender, city_id)
+		VALUES (?, ?, ?, ?, ?, ?);
+		`
+
+	_, err := r.db.ExecContext(ctx, qr, user.ID, user.Nama, user.Email, user.NomorTelepon, user.JenisKelamin, user.Kota.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

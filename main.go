@@ -2,17 +2,23 @@ package main
 
 import (
 	"context"
-	command "github.com/PBKKE08/FP-BE/api/command/beri_review"
+	"github.com/PBKKE08/FP-BE/api/command/beri_review"
+	"github.com/PBKKE08/FP-BE/api/command/buat_user"
 	"github.com/PBKKE08/FP-BE/api/handler"
 	"github.com/PBKKE08/FP-BE/api/usecase"
+	"github.com/PBKKE08/FP-BE/infra/authentication"
+	"github.com/PBKKE08/FP-BE/infra/mailer"
 	"github.com/PBKKE08/FP-BE/infra/query"
 	"github.com/PBKKE08/FP-BE/infra/repository"
+	"github.com/labstack/echo/v4/middleware"
+	"google.golang.org/api/option"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	firebase "firebase.google.com/go/v4"
 	"github.com/PBKKE08/FP-BE/infra/instance"
 	"github.com/PBKKE08/FP-BE/pkg"
 	"github.com/labstack/echo/v4"
@@ -21,9 +27,14 @@ import (
 )
 
 type Config struct {
-	DbURL       string `env:"DB_URL" default:"admin:password@tcp(localhost:3306)/socium_rentalis"`
-	ServerPort  string `env:"PORT" default:"7777"`
-	Environment string `env:"ENVIRONMENT" default:"DEV"`
+	DbURL        string `env:"DB_URL" default:"admin:password@tcp(localhost:3306)/socium_rentalis"`
+	ServerPort   string `env:"PORT" default:"7777"`
+	Environment  string `env:"ENVIRONMENT" default:"DEV"`
+	MailHost     string `env:"MAIL_HOST" default:"localhost"`
+	MailPort     int    `env:"MAIL_PORT" default:"1025"`
+	MailUsername string `env:"MAIL_USERNAME" default:"debuggerMail"`
+	MailPassword string `env:"MAIL_PASSWORD" default:""`
+	MailEmail    string `env:"MAIL_EMAIL" default:"info@company.com"`
 }
 
 const maxShutdownTimeout = 1 * time.Minute
@@ -53,22 +64,45 @@ func main() {
 		}
 	}()
 
+	opt := option.WithCredentialsFile("sak.json")
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		log.Fatal().Msgf("Error initializing Firebase app: %v\n", err)
+	}
+
 	queryInstance := query.NewQuery(db)
 	partnerRepo := repository.NewPartnerRepository(db)
 	penggunaRepo := repository.NewPenggunaRepository(db)
 	reviewRepo := repository.NewReviewRepository(db)
+	kotaRepo := repository.NewKota(db)
+	mailer := mailer.Mailer(mailer.SendEmail)
 
-	beriReviewCmd := command.BeriReview{
+	authInstance, err := authentication.NewFirebaseAuth(app)
+	if err != nil {
+		log.Fatal().Msgf("Err creating auth instance: %v\n", err)
+	}
+
+	beriReviewCmd := beri_review.BeriReview{
 		PenggunaRepo: penggunaRepo,
 		PartnerRepo:  partnerRepo,
 		ReviewRepo:   reviewRepo,
 	}
 
+	buatUserCmd := buat_user.BuatUser{
+		PenggunaRepo: penggunaRepo,
+		KotaRepo:     kotaRepo,
+	}
+
 	penggunaUsecase := usecase.NewPenggunaUsecase(queryInstance, &beriReviewCmd)
 	penggunaHandler := handler.NewPenggunaHandler(penggunaUsecase)
 
+	authUsecase := usecase.NewAuthUsecase(&buatUserCmd, authInstance, mailer)
+	authHandler := handler.NewAuthHandler(authUsecase)
+
 	server := echo.New()
+	server.Use(middleware.Recover())
 	penggunaHandler.Load(server)
+	authHandler.Load(server)
 
 	go func() {
 		if err := server.Start(":" + config.ServerPort); err != nil && err != http.ErrServerClosed {

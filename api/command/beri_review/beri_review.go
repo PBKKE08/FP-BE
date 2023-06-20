@@ -1,7 +1,8 @@
-package command
+package beri_review
 
 import (
 	"context"
+	"github.com/PBKKE08/FP-BE/core/repository"
 
 	"github.com/PBKKE08/FP-BE/core/model/partner"
 	"github.com/PBKKE08/FP-BE/core/model/pengguna"
@@ -9,9 +10,9 @@ import (
 )
 
 type BeriReview struct {
-	PenggunaRepo PenggunaRepository
-	PartnerRepo  PartnerRepository
-	ReviewRepo   ReviewRepository
+	PenggunaRepo repository.Pengguna
+	PartnerRepo  repository.Partner
+	ReviewRepo   repository.Review
 }
 
 func (b *BeriReview) Execute(ctx context.Context, req BeriReviewRequest) error {
