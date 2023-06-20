@@ -1,9 +1,9 @@
 package query
 
 type CariPasangan struct {
-	ID     string `json:"id,omitempty" db:"id"`
-	Nama   string `json:"nama,omitempty" db:"name"`
-	Harga  string `json:"harga,omitempty" db:"price"`
-	Rating int    `json:"rating,omitempty" db:"rating"`
-	Daerah string `json:"daerah,omitempty" db:"c_name"`
+	ID     string  `json:"id" db:"id"`
+	Nama   string  `json:"nama" db:"name"`
+	Harga  string  `json:"harga" db:"price"`
+	Rating float64 `json:"rating" db:"rating"`
+	Daerah string  `json:"daerah" db:"c_name"`
 }

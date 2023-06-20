@@ -15,7 +15,7 @@ func NewQuery(db *sqlx.DB) *Query {
 }
 
 func (q *Query) By(ctx context.Context, daerah string, jenisKelamin string) []query.CariPasangan {
-	var results = make([]query.CariPasangan, 0)
+	var results []query.CariPasangan
 
 	switch {
 	case daerah != "" && jenisKelamin != "":
@@ -25,17 +25,29 @@ func (q *Query) By(ctx context.Context, daerah string, jenisKelamin string) []qu
 		  p.name,
 		  p.price,
 		  c.name as c_name,
-		  r.rating
+		  COALESCE(average_rating, 0) as rating
 		FROM
 		  partners p
 		  JOIN cities c ON p.city_id = c.id
-		  JOIN reviews r ON p.id = r.partner_id
-		WHERE
-		  c.name = ?
-		  AND p.gender = ?;
+		  LEFT JOIN (
+			SELECT
+			  partner_id,
+			  AVG(rating) AS average_rating
+			FROM
+			  reviews
+			GROUP BY
+			  partner_id
+		  ) r ON p.id = r.partner_id
+		WHERE c.name = ? AND p.gender = ?;
 		`
 
-		q.db.GetContext(ctx, &results, qr, daerah, jenisKelamin)
+		rows, _ := q.db.QueryxContext(ctx, qr, daerah, jenisKelamin)
+		for rows.Next() {
+			var qq query.CariPasangan
+			rows.StructScan(&qq)
+
+			results = append(results, qq)
+		}
 
 		return results
 
@@ -46,35 +58,63 @@ func (q *Query) By(ctx context.Context, daerah string, jenisKelamin string) []qu
 		  p.name,
 		  p.price,
 		  c.name as c_name,
-		  r.rating
+		  COALESCE(average_rating, 0) as rating
 		FROM
 		  partners p
 		  JOIN cities c ON p.city_id = c.id
-		  JOIN reviews r ON p.id = r.partner_id
-		WHERE
-		  c.name = ?;
+		  LEFT JOIN (
+			SELECT
+			  partner_id,
+			  AVG(rating) AS average_rating
+			FROM
+			  reviews
+			GROUP BY
+			  partner_id
+		  ) r ON p.id = r.partner_id
+		WHERE c.name = ?;
 		`
 
-		q.db.GetContext(ctx, &results, qr, daerah)
+		rows, _ := q.db.QueryxContext(ctx, qr, daerah)
+		for rows.Next() {
+			var qq query.CariPasangan
+			rows.StructScan(&qq)
+
+			results = append(results, qq)
+		}
+
 		return results
 
 	case jenisKelamin != "":
 		qr := `
 		SELECT
-		  p.id,
-		  p.name,
-		  p.price,
+		  p.id as id,
+		  p.name as name,
+		  p.price as price,
 		  c.name as c_name,
-		  r.rating
+		  COALESCE(average_rating, 0) as rating
 		FROM
 		  partners p
 		  JOIN cities c ON p.city_id = c.id
-		  JOIN reviews r ON p.id = r.partner_id
-		WHERE
-		  p.gender = ?;
+		  LEFT JOIN (
+			SELECT
+			  partner_id,
+			  AVG(rating) AS average_rating
+			FROM
+			  reviews
+			GROUP BY
+			  partner_id
+		  ) r ON p.id = r.partner_id
+		WHERE p.gender = ?;
 		`
 
-		q.db.GetContext(ctx, &results, qr, jenisKelamin)
+		rows, _ := q.db.QueryxContext(ctx, qr, jenisKelamin)
+		for rows.Next() {
+			var qq query.CariPasangan
+			rows.StructScan(&qq)
+
+			results = append(results, qq)
+		}
+
 		return results
 
 	default:
@@ -84,14 +124,28 @@ func (q *Query) By(ctx context.Context, daerah string, jenisKelamin string) []qu
 		  p.name,
 		  p.price,
 		  c.name as c_name,
-		  r.rating
+		  COALESCE(average_rating, 0) as rating
 		FROM
 		  partners p
 		  JOIN cities c ON p.city_id = c.id
-		  JOIN reviews r ON p.id = r.partner_id;
+		  LEFT JOIN (
+			SELECT
+			  partner_id,
+			  AVG(rating) AS average_rating
+			FROM
+			  reviews
+			GROUP BY
+			  partner_id
+		  ) r ON p.id = r.partner_id
 		`
 
-		q.db.GetContext(ctx, &results, qr)
+		rows, _ := q.db.QueryxContext(ctx, qr)
+		for rows.Next() {
+			var qq query.CariPasangan
+			rows.StructScan(&qq)
+
+			results = append(results, qq)
+		}
 
 		return results
 	}
