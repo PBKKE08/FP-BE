@@ -53,5 +53,5 @@ func (h *PenggunaHandler) BeriReview(c echo.Context) error {
 		return c.JSON(500, Response(500, err.Error()))
 	}
 
-	return c.JSON(200, Response(200, "Created"))
+	return c.JSON(200, Response(200, "Review success"))
 }
