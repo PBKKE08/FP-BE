@@ -1,10 +1,12 @@
 CREATE TABLE cities (
     id CHAR(36) NOT NULL,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE users (
   id CHAR(36) NOT NULL,
+  name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
   telephone VARCHAR(20) NOT NULL,
   gender ENUM('Male', 'Female') NOT NULL,
@@ -17,6 +19,7 @@ CREATE TABLE users (
 
 CREATE TABLE partners (
   id CHAR(36) NOT NULL,
+  name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
   telephone VARCHAR(20) NOT NULL,
   gender ENUM('Male', 'Female') NOT NULL,

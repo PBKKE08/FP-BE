@@ -1,11 +1,13 @@
 package partner
 
+import "github.com/PBKKE08/FP-BE/core/model/kota"
+
 type Partner struct {
 	ID           ID
 	Nama         string
 	Email        string
 	NomorTelepon string
 	JenisKelamin string
-	Kota         string
+	Kota         kota.Kota
 	Harga        string
 }

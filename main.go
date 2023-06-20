@@ -2,22 +2,27 @@ package main
 
 import (
 	"context"
-	"github.com/PBKKE08/FP-BE/infra/instance"
-	"github.com/PBKKE08/FP-BE/pkg"
-	"github.com/labstack/echo/v4"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	command "github.com/PBKKE08/FP-BE/api/command/beri_review"
+	"github.com/PBKKE08/FP-BE/api/handler"
+	"github.com/PBKKE08/FP-BE/api/usecase"
+	"github.com/PBKKE08/FP-BE/infra/query"
+	"github.com/PBKKE08/FP-BE/infra/repository"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/PBKKE08/FP-BE/infra/instance"
+	"github.com/PBKKE08/FP-BE/pkg"
+	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 type Config struct {
-	DbURL       string `env:"DB_URL" default:"postgresql://postgres:postgres@localhost:5678/socium_rentalis?sslmode=disable"`
-	RedisURL    string `env:"REDIS_URL" default:"localhost:6379"`
-	ServerPort  string `env:"PORT" default:"6666"`
+	DbURL       string `env:"DB_URL" default:"admin:password@tcp(localhost:3306)/socium_rentalis"`
+	ServerPort  string `env:"PORT" default:"7777"`
 	Environment string `env:"ENVIRONMENT" default:"DEV"`
 }
 
@@ -41,19 +46,29 @@ func init() {
 }
 
 func main() {
-	_, closeDB := instance.NewPostgreSQL(config.DbURL)
-	_, closeRedis := instance.NewRedis(config.RedisURL)
+	db, closeDB := instance.NewMySQL(config.DbURL)
 	defer func() {
 		if err := closeDB(); err != nil {
 			log.Error().Err(err)
 		}
-
-		if err := closeRedis(); err != nil {
-			log.Error().Err(err)
-		}
 	}()
 
+	queryInstance := query.NewQuery(db)
+	partnerRepo := repository.NewPartnerRepository(db)
+	penggunaRepo := repository.NewPenggunaRepository(db)
+	reviewRepo := repository.NewReviewRepository(db)
+
+	beriReviewCmd := command.BeriReview{
+		PenggunaRepo: penggunaRepo,
+		PartnerRepo:  partnerRepo,
+		ReviewRepo:   reviewRepo,
+	}
+
+	penggunaUsecase := usecase.NewPenggunaUsecase(queryInstance, &beriReviewCmd)
+	penggunaHandler := handler.NewPenggunaHandler(penggunaUsecase)
+
 	server := echo.New()
+	penggunaHandler.Load(server)
 
 	go func() {
 		if err := server.Start(":" + config.ServerPort); err != nil && err != http.ErrServerClosed {

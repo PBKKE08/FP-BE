@@ -5,12 +5,13 @@ import (
 
 	"github.com/PBKKE08/FP-BE/core/model/partner"
 	"github.com/PBKKE08/FP-BE/core/model/pengguna"
+	"github.com/PBKKE08/FP-BE/core/model/review"
 )
 
 type BeriReview struct {
 	PenggunaRepo PenggunaRepository
-	PartnerRepo PartnerRepository
-	ReviewRepo ReviewRepository
+	PartnerRepo  PartnerRepository
+	ReviewRepo   ReviewRepository
 }
 
 func (b *BeriReview) Execute(ctx context.Context, req BeriReviewRequest) error {
@@ -18,8 +19,8 @@ func (b *BeriReview) Execute(ctx context.Context, req BeriReviewRequest) error {
 	if err != nil {
 		return err
 	}
-	
-	err = b.PenggunaRepo.Exist(ctx, penggunaId)
+
+	pengguna, err := b.PenggunaRepo.ByID(ctx, penggunaId)
 	if err != nil {
 		return err
 	}
@@ -29,12 +30,21 @@ func (b *BeriReview) Execute(ctx context.Context, req BeriReviewRequest) error {
 		return err
 	}
 
-	err = b.PartnerRepo.Exist(ctx, partnerId)
+	partner, err := b.PartnerRepo.ByID(ctx, partnerId)
 	if err != nil {
 		return err
 	}
 
-	err = b.ReviewRepo.Save(ctx, penggunaId, partnerId, req.Rating, req.Comment)
+	reviewID := review.NewID()
+	reviewInsert := review.Review{
+		ID:       reviewID,
+		Pengguna: pengguna,
+		Partner:  partner,
+		Rating:   req.Rating,
+		Comment:  req.Comment,
+	}
+
+	err = b.ReviewRepo.Save(ctx, reviewInsert)
 	if err != nil {
 		return err
 	}
