@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "socium-rentalis",
+  "private_key_id": "b428c160b65bdb1c645ba7da7152ab8c3858cc58",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC+cvLEquhE87Kg\nf0vCkK3ZEYw3QxUv23ydztI6UFq8jEeW691njYHnYI8thYHJ9TXSFFLRcwLv9MO1\nwOW8VBtuxfs/dGRkmzL36xX9u/ruP6/hW1YfP4zPK12ySBzbzl742vaHjYN9Ur8+\nzYPsGhl5dvA8weK17s28cs2efzi/53I9j5Ulq+HWF8k4LYjcYJZ4s2ojeRzUw7kj\nhxEqnW4Y6gNhRymRzVzmYtNKzY4eSXJVLpN2a9rhqOYRqSYAP8be14Nqhah03dlw\nHBpbwZR4VWSH3mWS191R4O6Y5fBrpgixkkcqNT4cHjvmARtkaVEdRi5at0CYH+PF\n6uKIq5dLAgMBAAECggEASQCj+Wov3Zpyqt4QytSNp0r4Lgi7WtxuEMnCQRMjLOoy\n2PGxrWuLU4dqar8l6KXjixM6Scol4pg22vlFtuKgn14puIGjqALrzyeghuIjRmdI\nQoCx6wl/rrwHTvsggMtDEW5RmNVQhV4OLAM4Ye0BPdOvNAL4JdgTqfxxwCMxPDHQ\nfuYNBF5jQ1G+GAzQrrHcTQQSwhs21y6cLsho11cCcLZTb4JcO+EZcaQit78AWo9x\nyPbOL8iylYAbB5JEFthf0kiAQXXLFGv1MwgczotP4nvRGzDUE/ZrM153PRQi0itC\n0fQSnkENfuMBjW74ku4eEl4PBJ9L1vfLopLUYDUUUQKBgQDvVC1dH5/P1pjnr0rG\n44/UgTms2j1c0bdIHyHOyagq6OteswkjvQKm2CY6OrYqJcXbyc2/DEA0IFsP/E4l\nn9rwrLlWM0AbeFxJmeXhdYnOn6xPFWRf0B34vDrwVoQ/ri13pOCxA/rnIMzsbs8z\nrljhakHGsNTe62XE3L0vIE54MQKBgQDLtx+vo+YIc9m0WN/QvOKFDJ8/a/PfQHov\nHx5+0N8R4OyRqB1io3YhzAsuPg7xDAvOQwUVV6kjYz55TB8EybKRZKd83sG4o+EQ\n1T7hdqLUX/ua9nL1MB70jNOtDlmug/ccrWIe100JaEd8xzXWrHkXrJNT118SlCLT\nqm0KS98kOwKBgQCCI77rNYgcZ3AMBBjgX9vVTVPEd4QIlg1ZDXy/yo5EjxV2EFr2\n8Q+hFEZtQYHPF20o3+qeaZX8AmAiKCuCcBOI7hN2GTZR+bgNWb9UQyrljZQQCOzk\n4PF7UTenexQ84ITe22xHNYfY6NAl/Pd0/ehc4v/TgFKwyUY0r2e8WY/x8QKBgA/h\nfbneiA8+oMkbaI9IOkxu+HckPkW4LA5CWck/FTS6mRadyXSoE4x88J4xPk7yRnVU\n6i+IvunAUd143q4r3xzQgPIOF4ICXIhIZ3eCHR17Qg0Ji1qr3q3n0JScGsetB/WX\nWp/W3u2N0IzcpsjOdz4uOOn/Ty0OmUxw68EyuvmDAoGAYq+o0fXKEefFWKa8Tg7S\nZDh7mlV2dnYtwJzIwia+a8izzw/xOGXmWHZIXzuJdrlpCzGhhKKAybtAWUWhrX0Q\ng6EvHQ56PIfYwYUMU7XJBVSKBYAZDBCNupCi3BTQ1CXtSX/Mlm/YdsxejeZ4xkWU\ncCXT5MVD05eF78GeDATghpE=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-2blea@socium-rentalis.iam.gserviceaccount.com",
+  "client_id": "116883535609775405017",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-2blea%40socium-rentalis.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
