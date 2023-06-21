@@ -2,6 +2,7 @@ package query
 
 type PartnerInginMendaftar struct {
 	PartnerID    string `json:"partner_id" db:"partner_id"`
+	Email        string `json:"partner_email" db:"partner_email"`
 	Nama         string `json:"name" db:"name"`
 	JenisKelamin string `json:"gender" db:"gender"`
 	Harga        string `json:"price" db:"price"`

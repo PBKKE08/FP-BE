@@ -34,6 +34,7 @@ type Review interface {
 
 type Transaction interface {
 	Save(ctx context.Context, tx transaction.Transaction) error
+	SetPaid(ctx context.Context, id transaction.ID) error
 }
 
 type Order interface {

@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"fmt"
+	"github.com/PBKKE08/FP-BE/api/command/terima_pembayaran"
 	"github.com/PBKKE08/FP-BE/api/query"
 )
 
@@ -11,6 +13,10 @@ type TolakPartnerCommand interface {
 
 type TerimaPartnerCommand interface {
 	Execute(ctx context.Context, id string) error
+}
+
+type TerimaPembayaranCommand interface {
+	Execute(ctx context.Context, r terima_pembayaran.Request) error
 }
 
 type DaftarListPendaftarQuery interface {
@@ -31,6 +37,8 @@ type AdminUsecase struct {
 	tolakPartner          TolakPartnerCommand
 	terimaPartner         TerimaPartnerCommand
 	transaksiNonConfirmed TransaksiNonConfirmedQuery
+	terimaPembayaran      TerimaPembayaranCommand
+	mailer                Mailer
 	authProvider          AdminAuthProvider
 }
 
@@ -39,12 +47,16 @@ func NewAdminUsecase(
 	tolakPartner TolakPartnerCommand,
 	terimaPartner TerimaPartnerCommand,
 	confirmedQuery TransaksiNonConfirmedQuery,
+	terimaPembayaran TerimaPembayaranCommand,
+	mailer Mailer,
 	authProvider AdminAuthProvider) *AdminUsecase {
 	return &AdminUsecase{
 		getListPendaftar:      getListPendaftar,
 		tolakPartner:          tolakPartner,
 		terimaPartner:         terimaPartner,
 		authProvider:          authProvider,
+		terimaPembayaran:      terimaPembayaran,
+		mailer:                mailer,
 		transaksiNonConfirmed: confirmedQuery}
 }
 
@@ -82,4 +94,20 @@ func (a *AdminUsecase) TolakPartnerPendaftar(ctx context.Context, id string, ema
 
 func (a *AdminUsecase) DaftarTxNonConfirmed(ctx context.Context) []query.TransaksiNonTerbayar {
 	return a.transaksiNonConfirmed.DaftarTransaksiNonConfirmed(ctx)
+}
+
+func (a *AdminUsecase) TerimaPembayaranPengguna(ctx context.Context, r terima_pembayaran.Request) error {
+	err := a.terimaPembayaran.Execute(ctx, r)
+	if err != nil {
+		return err
+	}
+
+	msg := fmt.Sprintf("From: %s | Date: %s | Start: %s | End: %s", r.NamaPembooking, r.WaktuBooking, r.Mulai, r.Selesai)
+
+	err = a.mailer.Mail(ctx, "socium@company.com", r.Email, "New Order", msg)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

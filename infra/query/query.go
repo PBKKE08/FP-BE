@@ -415,6 +415,7 @@ func (q *Query) GetListPendaftar(ctx context.Context) []query.PartnerInginMendaf
 	SELECT
 	  p.id as partner_id,
 	  p.name,
+	  p.email as partner_email,
 	  p.price,
 	  p.gender,
 	  p.description,

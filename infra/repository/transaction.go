@@ -23,6 +23,18 @@ func (r *TransactionRepository) Save(ctx context.Context, tx transaction.Transac
 	return err
 }
 
+func (r *TransactionRepository) SetPaid(ctx context.Context, id transaction.ID) error {
+	qr := `
+	UPDATE transactions
+	SET paid_at = CURRENT_TIME
+	WHERE id = ?;
+	`
+
+	_, err := r.db.ExecContext(ctx, qr, id.String())
+
+	return err
+}
+
 func (r *TransactionRepository) WithDbTx(ctx context.Context) (*sqlx.Tx, error) {
 	tx, err := r.db.BeginTxx(ctx, nil)
 	return tx, err

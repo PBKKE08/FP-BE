@@ -9,6 +9,7 @@ import (
 	"github.com/PBKKE08/FP-BE/api/command/buat_partner"
 	"github.com/PBKKE08/FP-BE/api/command/buat_user"
 	"github.com/PBKKE08/FP-BE/api/command/terima_partner"
+	"github.com/PBKKE08/FP-BE/api/command/terima_pembayaran"
 	"github.com/PBKKE08/FP-BE/api/command/tolak_partner"
 	"github.com/PBKKE08/FP-BE/api/handler"
 	"github.com/PBKKE08/FP-BE/api/usecase"
@@ -131,6 +132,8 @@ func main() {
 		PartnerRepo:     partnerRepo,
 	}
 
+	terimaPembayaranCmd := terima_pembayaran.TerimaPembayaran{TransactionRepo: txRepo}
+
 	terimaPartnerCmd := terima_partner.TerimaPartner{PartnerRepo: partnerRepo}
 	tolakPartnerCmd := tolak_partner.TolakPartner{PartnerRepo: partnerRepo}
 
@@ -149,7 +152,7 @@ func main() {
 	authUsecase := usecase.NewAuthUsecase(&buatUserCmd, authInstance, queryInstance, mailer, jwtProvider, &buatPartnerCmd, queryInstance)
 	authHandler := handler.NewAuthHandler(authUsecase)
 
-	adminUsecase := usecase.NewAdminUsecase(queryInstance, &tolakPartnerCmd, &terimaPartnerCmd, queryInstance, authInstance)
+	adminUsecase := usecase.NewAdminUsecase(queryInstance, &tolakPartnerCmd, &terimaPartnerCmd, queryInstance, &terimaPembayaranCmd, mailer, authInstance)
 	adminHandler := handler.NewAdminHandler(adminUsecase)
 
 	server := echo.New()
