@@ -12,7 +12,7 @@ type BuatUser struct {
 	KotaRepo     repository.Kota
 }
 
-func (u *BuatUser) Execute(ctx context.Context, req BuatUserRequest) error {
+func (u *BuatUser) Execute(ctx context.Context, req Request) error {
 	kotaID, err := kota.NewIDFrom(req.KotaID)
 	if err != nil {
 		return err

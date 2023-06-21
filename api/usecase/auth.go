@@ -17,7 +17,7 @@ type Mailer interface {
 }
 
 type BuatUserCommand interface {
-	Execute(ctx context.Context, request buat_user.BuatUserRequest) error
+	Execute(ctx context.Context, request buat_user.Request) error
 }
 
 type CariUserQuery interface {
@@ -40,7 +40,7 @@ func NewAuthUsecase(buatUser BuatUserCommand, authProvider AuthProvider, cariUse
 	return &AuthUsecase{buatUser: buatUser, authProvider: authProvider, mailer: mailer, cariUser: cariUser, jwtProvider: jwtProvider}
 }
 
-func (a *AuthUsecase) Register(ctx context.Context, req buat_user.BuatUserRequest) error {
+func (a *AuthUsecase) Register(ctx context.Context, req buat_user.Request) error {
 	if req.Email == "" {
 		return errors.New("empty email")
 	}

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"github.com/labstack/echo/v4"
 	"strings"
 )
 
@@ -9,23 +10,20 @@ var (
 	ErrInternal = errors.New("internal server error")
 )
 
-func Response(code int, msg string) map[string]any {
-	m := make(map[string]any, 3)
-
-	m["code"] = code
-	m["msg"] = msg
+func Response(code int, msg string) echo.Map {
+	m := echo.Map{
+		"code": code,
+		"msg":  msg,
+	}
 
 	return m
 }
 
-func ResponseWithData(code int, msg string, data any) map[string]any {
-	m := make(map[string]any, 3)
-
-	m["code"] = code
-	m["msg"] = msg
-
-	if data != nil {
-		m["data"] = data
+func ResponseWithData(code int, msg string, data any) echo.Map {
+	m := echo.Map{
+		"code": code,
+		"msg":  msg,
+		"data": data,
 	}
 
 	return m

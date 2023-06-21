@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/PBKKE08/FP-BE/api/command/beri_review"
+	"github.com/PBKKE08/FP-BE/api/command/buat_booking"
 	"github.com/PBKKE08/FP-BE/api/command/buat_user"
 	"github.com/PBKKE08/FP-BE/api/handler"
 	"github.com/PBKKE08/FP-BE/api/usecase"
@@ -86,11 +87,14 @@ func main() {
 		log.Fatal().Msgf("Error initializing Firebase app: %v\n", err)
 	}
 
-	queryInstance := query.NewQuery(db)
 	partnerRepo := repository.NewPartnerRepository(db)
 	penggunaRepo := repository.NewPenggunaRepository(db)
 	reviewRepo := repository.NewReviewRepository(db)
 	kotaRepo := repository.NewKota(db)
+	txRepo := repository.NewTransactionRepository(db)
+	orderRepo := repository.NewOrderRepo(db)
+
+	queryInstance := query.NewQuery(db)
 	mailer := mailer.Mailer(mailer.SendEmail)
 	jwtProvider := authentication.JWTProvider(authentication.GenerateToken)
 
@@ -110,8 +114,21 @@ func main() {
 		KotaRepo:     kotaRepo,
 	}
 
+	buatBookingCmd := buat_booking.BuatBooking{
+		TransactionRepo: txRepo,
+		OrderRepo:       orderRepo,
+		PenggunaRepo:    penggunaRepo,
+		PartnerRepo:     partnerRepo,
+	}
+
+	publicUsecase := usecase.NewPublicUsecase(queryInstance)
+	publicHandler := handler.NewPublicHandler(publicUsecase)
+
 	penggunaUsecase := usecase.NewPenggunaUsecase(queryInstance, &beriReviewCmd)
 	penggunaHandler := handler.NewPenggunaHandler(penggunaUsecase)
+
+	bookingUsecase := usecase.NewBookingUsecase(&buatBookingCmd)
+	bookingHandler := handler.NewBookingHandler(bookingUsecase)
 
 	authUsecase := usecase.NewAuthUsecase(&buatUserCmd, authInstance, queryInstance, mailer, jwtProvider)
 	authHandler := handler.NewAuthHandler(authUsecase)
@@ -120,8 +137,10 @@ func main() {
 	server.Use(middleware.CORS())
 	server.Use(middleware.Recover())
 
+	bookingHandler.Load(server)
 	penggunaHandler.Load(server)
 	authHandler.Load(server)
+	publicHandler.Load(server)
 
 	go func() {
 		if err := server.Start(":" + config.ServerPort); err != nil && err != http.ErrServerClosed {

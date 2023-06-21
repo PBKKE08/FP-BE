@@ -1,6 +1,6 @@
 package buat_user
 
-type BuatUserRequest struct {
+type Request struct {
 	Nama         string `json:"name"`
 	Telepon      string `json:"phone_number"`
 	Email        string `json:"email"`

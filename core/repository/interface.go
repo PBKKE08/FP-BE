@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"github.com/PBKKE08/FP-BE/core/model/booking/order"
+	"github.com/PBKKE08/FP-BE/core/model/booking/transaction"
 	"github.com/PBKKE08/FP-BE/core/model/kota"
 	"github.com/PBKKE08/FP-BE/core/model/review"
 
@@ -24,4 +26,13 @@ type Kota interface {
 
 type Review interface {
 	Save(ctx context.Context, review review.Review) error
+}
+
+type Transaction interface {
+	Save(ctx context.Context, tx transaction.Transaction) error
+}
+
+type Order interface {
+	ByID(ctx context.Context, id order.ID) (order.Order, error)
+	Save(ctx context.Context, order order.Order) error
 }

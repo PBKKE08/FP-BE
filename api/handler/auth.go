@@ -22,7 +22,7 @@ func (h *AuthHandler) Load(e *echo.Echo) {
 }
 
 func (h *AuthHandler) Register(c echo.Context) error {
-	var r buat_user.BuatUserRequest
+	var r buat_user.Request
 
 	if err := c.Bind(&r); err != nil {
 		return c.JSON(422, Response(422, err.Error()))

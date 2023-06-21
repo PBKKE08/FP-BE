@@ -1,6 +1,8 @@
 package order
 
 import (
+	"github.com/PBKKE08/FP-BE/core/model/partner"
+	"github.com/PBKKE08/FP-BE/core/model/pengguna"
 	"time"
 )
 
@@ -10,6 +12,8 @@ type Order struct {
 	TimeStart  string
 	TimeEnd    string
 	Message    string
+	Partner    partner.Partner
+	Pengguna   pengguna.Pengguna
 }
 
 func (o Order) GetDuration() float64 {
@@ -29,4 +33,8 @@ func (o Order) IsTimeValid() bool {
 	}
 
 	return true
+}
+
+func (o Order) ToBookingTypeString() string {
+	return o.BookingDay.Format("2006-01-02")
 }

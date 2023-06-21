@@ -11,6 +11,7 @@ var jwtConfig = echojwt.Config{
 	NewClaimsFunc: func(c echo.Context) jwt.Claims {
 		return new(authentication.CustomClaims)
 	},
+	SigningKey: []byte("123123123"),
 }
 
 type customClaims = authentication.CustomClaims
