@@ -20,8 +20,8 @@ func (h *AuthHandler) Load(e *echo.Echo) {
 
 	apiGroup.POST("/register", h.Register)
 	apiGroup.POST("/login", h.Login)
-	apiGroup.POST("/register/partner", h.RegisterPartner)
-	apiGroup.POST("/login/partner", h.LoginPartner)
+	apiGroup.POST("/register_partner", h.RegisterPartner)
+	apiGroup.POST("/login_partner", h.LoginPartner)
 }
 
 func (h *AuthHandler) Register(c echo.Context) error {

@@ -28,7 +28,7 @@ func (h *PenggunaHandler) Load(e *echo.Echo) {
 
 	privateGroup.GET("/history-transaksi", h.LihatTransaksi)
 	privateGroup.GET("/history-transaksi/:order_id", h.LihatDetailTransaksi)
-	privateGroup.GET("/review", h.BeriReview)
+	privateGroup.POST("/review", h.BeriReview)
 }
 
 func (h *PenggunaHandler) CariPasangan(c echo.Context) error {

@@ -20,6 +20,8 @@ type Pengguna interface {
 type Partner interface {
 	ByID(ctx context.Context, id partner.ID) (partner.Partner, error)
 	Save(ctx context.Context, user partner.Partner) error
+	Approved(ctx context.Context, id partner.ID) error
+	Delete(ctx context.Context, id partner.ID) error
 }
 
 type Kota interface {

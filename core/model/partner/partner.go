@@ -14,4 +14,5 @@ type Partner struct {
 	Kota         kota.Kota
 	Harga        string
 	Kategori     kategori.Kategori
+	Description  string
 }

@@ -1,7 +1,6 @@
 package buat_partner
 
 type Request struct {
-	ID           string `json:"id"`
 	Nama         string `json:"name"`
 	Email        string `json:"email"`
 	Password     string `json:"password"`
@@ -10,4 +9,5 @@ type Request struct {
 	KategoriID   string `json:"category_id"`
 	Harga        string `json:"price"`
 	KotaID       string `json:"city_id"`
+	Description  string `json:"description"`
 }

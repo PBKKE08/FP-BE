@@ -108,3 +108,32 @@ func (f *FirebaseAuth) Exists(ctx context.Context, email string) bool {
 
 	return true
 }
+
+func (f *FirebaseAuth) ApprovedAcc(ctx context.Context, email string) error {
+	user, err := f.client.GetUserByEmail(ctx, email)
+	if err != nil && auth.IsUserNotFound(err) {
+		return errors.New("email not found")
+	}
+
+	params := (&auth.UserToUpdate{}).EmailVerified(true)
+	_, err = f.client.UpdateUser(ctx, user.UID, params)
+	if err != nil {
+		return fmt.Errorf("error update email in provider: %w", err)
+	}
+
+	return nil
+}
+
+func (f *FirebaseAuth) DeleteAcc(ctx context.Context, email string) error {
+	user, err := f.client.GetUserByEmail(ctx, email)
+	if err != nil && auth.IsUserNotFound(err) {
+		return errors.New("email not found")
+	}
+
+	err = f.client.DeleteUser(ctx, user.UID)
+	if err != nil {
+		return fmt.Errorf("error delete acc: %w", err)
+	}
+
+	return nil
+}

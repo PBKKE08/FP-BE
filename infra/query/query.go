@@ -407,3 +407,36 @@ func (q *Query) LihatDetailTransaksi(ctx context.Context, id order.ID) query.Det
 
 	return result
 }
+
+func (q *Query) GetListPendaftar(ctx context.Context) []query.PartnerInginMendaftar {
+	var results []query.PartnerInginMendaftar
+
+	qr := `
+	SELECT
+	  p.id as partner_id,
+	  p.name,
+	  p.price,
+	  p.gender,
+	  p.description,
+	  c.name as city_name,
+	  ca.name as category_name
+	FROM
+	  partners p
+	  JOIN cities c ON p.city_id = c.id
+	  JOIN categories ca on p.category_id = ca.id
+	WHERE
+	  p.is_approved = true;
+	`
+
+	rows, _ := q.db.QueryxContext(ctx, qr)
+	defer rows.Close()
+
+	for rows.Next() {
+		var result query.PartnerInginMendaftar
+		rows.StructScan(&result)
+
+		results = append(results, result)
+	}
+
+	return results
+}

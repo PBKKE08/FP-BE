@@ -44,6 +44,7 @@ func (u *BuatPartner) Execute(ctx context.Context, req Request) error {
 		Kota:         kotaData,
 		Harga:        req.Harga,
 		Kategori:     kategoriData,
+		Description:  req.Description,
 	}
 
 	err = u.PartnerRepo.Save(ctx, partnerData)

@@ -8,6 +8,8 @@ import (
 	"github.com/PBKKE08/FP-BE/api/command/buat_booking"
 	"github.com/PBKKE08/FP-BE/api/command/buat_partner"
 	"github.com/PBKKE08/FP-BE/api/command/buat_user"
+	"github.com/PBKKE08/FP-BE/api/command/terima_partner"
+	"github.com/PBKKE08/FP-BE/api/command/tolak_partner"
 	"github.com/PBKKE08/FP-BE/api/handler"
 	"github.com/PBKKE08/FP-BE/api/usecase"
 	"github.com/PBKKE08/FP-BE/infra/authentication"
@@ -129,6 +131,9 @@ func main() {
 		PartnerRepo:     partnerRepo,
 	}
 
+	terimaPartnerCmd := terima_partner.TerimaPartner{PartnerRepo: partnerRepo}
+	tolakPartnerCmd := tolak_partner.TolakPartner{PartnerRepo: partnerRepo}
+
 	publicUsecase := usecase.NewPublicUsecase(queryInstance)
 	publicHandler := handler.NewPublicHandler(publicUsecase)
 
@@ -144,15 +149,20 @@ func main() {
 	authUsecase := usecase.NewAuthUsecase(&buatUserCmd, authInstance, queryInstance, mailer, jwtProvider, &buatPartnerCmd, queryInstance)
 	authHandler := handler.NewAuthHandler(authUsecase)
 
+	adminUsecase := usecase.NewAdminUsecase(queryInstance, &tolakPartnerCmd, &terimaPartnerCmd, authInstance)
+	adminHandler := handler.NewAdminHandler(adminUsecase)
+
 	server := echo.New()
 	server.Use(middleware.CORS())
 	server.Use(middleware.Recover())
+	server.Use(middleware.Logger())
 
 	bookingHandler.Load(server)
 	penggunaHandler.Load(server)
 	authHandler.Load(server)
 	publicHandler.Load(server)
 	partnerHandler.Load(server)
+	adminHandler.Load(server)
 
 	go func() {
 		if err := server.Start(":" + config.ServerPort); err != nil && err != http.ErrServerClosed {
