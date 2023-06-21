@@ -99,3 +99,12 @@ func (f *FirebaseAuth) Login(ctx context.Context, email, password string) error 
 
 	return nil
 }
+
+func (f *FirebaseAuth) Exists(ctx context.Context, email string) bool {
+	_, err := f.client.GetUserByEmail(ctx, email)
+	if err != nil && auth.IsUserNotFound(err) {
+		return false
+	}
+
+	return true
+}

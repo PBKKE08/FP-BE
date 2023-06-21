@@ -18,7 +18,7 @@ func NewReviewRepository(db *sqlx.DB) *ReviewRepository {
 
 func (r *ReviewRepository) Save(ctx context.Context, review review.Review) error {
 	q := `INSERT INTO reviews(id, user_id, partner_id, rating, comment) VALUES(?, ?, ?, ?, ?)`
-	
+
 	result, err := r.db.ExecContext(ctx, q, review.ID.String(), review.Pengguna.ID.String(), review.Partner.ID.String(), review.Rating, review.Comment)
 	if err != nil {
 		return err

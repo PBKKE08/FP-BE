@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"github.com/PBKKE08/FP-BE/api/command/buat_partner"
 	"github.com/PBKKE08/FP-BE/api/command/buat_user"
 	"github.com/PBKKE08/FP-BE/api/query"
 )
@@ -20,8 +21,16 @@ type BuatUserCommand interface {
 	Execute(ctx context.Context, request buat_user.Request) error
 }
 
+type BuatPartnerCommand interface {
+	Execute(ctx context.Context, request buat_partner.Request) error
+}
+
 type CariUserQuery interface {
 	ByUserEmail(ctx context.Context, email string) query.CariUserByEmail
+}
+
+type CariPartnerQuery interface {
+	ByPartnerEmail(ctx context.Context, email string) query.CariPartnerByEmail
 }
 
 type JWTProvider interface {
@@ -30,14 +39,32 @@ type JWTProvider interface {
 
 type AuthUsecase struct {
 	buatUser     BuatUserCommand
+	buatPartner  BuatPartnerCommand
 	authProvider AuthProvider
 	mailer       Mailer
 	cariUser     CariUserQuery
+	cariPartner  CariPartnerQuery
 	jwtProvider  JWTProvider
 }
 
-func NewAuthUsecase(buatUser BuatUserCommand, authProvider AuthProvider, cariUser CariUserQuery, mailer Mailer, jwtProvider JWTProvider) *AuthUsecase {
-	return &AuthUsecase{buatUser: buatUser, authProvider: authProvider, mailer: mailer, cariUser: cariUser, jwtProvider: jwtProvider}
+func NewAuthUsecase(
+	buatUser BuatUserCommand,
+	authProvider AuthProvider,
+	cariUser CariUserQuery,
+	mailer Mailer,
+	jwtProvider JWTProvider,
+	buatPartner BuatPartnerCommand,
+	cariPartner CariPartnerQuery,
+) *AuthUsecase {
+	return &AuthUsecase{
+		buatUser:     buatUser,
+		authProvider: authProvider,
+		mailer:       mailer,
+		cariUser:     cariUser,
+		jwtProvider:  jwtProvider,
+		buatPartner:  buatPartner,
+		cariPartner:  cariPartner,
+	}
 }
 
 func (a *AuthUsecase) Register(ctx context.Context, req buat_user.Request) error {
@@ -86,6 +113,37 @@ func (a *AuthUsecase) Login(ctx context.Context, email, password string) (string
 	}
 
 	result := a.cariUser.ByUserEmail(ctx, email)
+
+	token := a.jwtProvider.GenerateToken(result.Email, result.Nama, result.ID, result.NomorTelepon, result.JenisKelamin)
+
+	return token, nil
+}
+
+func (a *AuthUsecase) RegisterPartner(ctx context.Context, req buat_partner.Request) error {
+	_, err := a.authProvider.Register(ctx, req.Email, req.Password)
+	if err != nil {
+		return err
+	}
+
+	err = a.buatPartner.Execute(ctx, req)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *AuthUsecase) LoginPartner(ctx context.Context, email, password string) (string, error) {
+	result := a.cariPartner.ByPartnerEmail(ctx, email)
+	if !result.IsApproved {
+		return "", errors.New("account still not approved.")
+	}
+
+	err := a.authProvider.Login(ctx, email, password)
+	if err != nil {
+		return "", err
+	}
 
 	token := a.jwtProvider.GenerateToken(result.Email, result.Nama, result.ID, result.NomorTelepon, result.JenisKelamin)
 

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/PBKKE08/FP-BE/api/query"
+	"github.com/PBKKE08/FP-BE/core/model/booking/order"
 	"github.com/PBKKE08/FP-BE/core/model/partner"
 	"github.com/PBKKE08/FP-BE/core/model/pengguna"
 	"github.com/jmoiron/sqlx"
@@ -220,6 +221,19 @@ func (q *Query) ByUserEmail(ctx context.Context, email string) query.CariUserByE
 	return results
 }
 
+func (q *Query) ByPartnerEmail(ctx context.Context, email string) query.CariPartnerByEmail {
+	var results query.CariPartnerByEmail
+
+	qr := `SELECT id, name, email, telephone, gender, is_approved FROM partners WHERE email = ?`
+
+	err := q.db.GetContext(ctx, &results, qr, email)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return query.CariPartnerByEmail{}
+	}
+
+	return results
+}
+
 func (q *Query) GetAllCityAndCategory(ctx context.Context) query.AllCitiesAndCategories {
 	qr1 := `SELECT * FROM categories`
 	qr2 := `SELECT * FROM cities`
@@ -306,7 +320,9 @@ func (q *Query) LihatTransaksi(ctx context.Context, id pengguna.ID) ([]query.Sel
 	qr := `
 		SELECT 
 		p.name, 
+		p.id as partner_id,
 		c.name as cat_name, 
+		o.id as order_id,
 		o.booking_day as booking_date, 
 		o.time_start as start_time, 
 		o.time_end as end_time,
@@ -347,4 +363,47 @@ func (q *Query) LihatTransaksi(ctx context.Context, id pengguna.ID) ([]query.Sel
 	}
 
 	return results, err
+}
+
+func (q *Query) LihatDetailTransaksi(ctx context.Context, id order.ID) query.DetailTransaksi {
+	var result query.DetailTransaksi
+
+	qr := `
+	SELECT
+	  p.name,
+	  p.id as partner_id,
+	  c.name as cat_name,
+	  o.id as order_id,
+	  o.booking_day as booking_date,
+	  o.time_start as start_time,
+	  o.time_end as end_time,
+	  t.price as price,
+	  t.payment_type as payment_type,
+	  CASE
+		WHEN t.paid_at IS NULL THEN false
+		ELSE true
+	  END AS is_paid,
+	  CASE
+		WHEN o.booking_day < curdate() THEN 1
+		WHEN o.booking_day = curdate()
+		AND o.time_end > curtime() THEN 1
+		WHEN o.booking_day = curdate()
+		AND o.time_start > curtime()
+		AND o.time_end < curtime() THEN 2
+		WHEN o.booking_day = curdate()
+		AND o.time_start < curtime() THEN 3
+		ELSE 3
+	  END AS order_status
+	FROM
+	  partners p
+	  JOIN categories c ON p.category_id = c.id
+	  JOIN orders o ON p.id = o.partners_id
+	  JOIN transactions t on o.id = t.order_id
+	WHERE
+	  o.id = ?;
+		`
+
+	q.db.GetContext(ctx, &result, qr, id.String())
+
+	return result
 }

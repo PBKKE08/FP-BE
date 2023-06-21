@@ -10,8 +10,8 @@ type Kategori struct {
 	db *sqlx.DB
 }
 
-func NewKategori(db *sqlx.DB) *Kota {
-	return &Kota{db: db}
+func NewKategori(db *sqlx.DB) *Kategori {
+	return &Kategori{db: db}
 }
 
 func (k *Kategori) ByID(ctx context.Context, id kategori.ID) (kategori.Kategori, error) {

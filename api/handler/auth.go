@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/PBKKE08/FP-BE/api/command/buat_partner"
 	"github.com/PBKKE08/FP-BE/api/command/buat_user"
 	"github.com/PBKKE08/FP-BE/api/usecase"
 	"github.com/labstack/echo/v4"
@@ -19,6 +20,8 @@ func (h *AuthHandler) Load(e *echo.Echo) {
 
 	apiGroup.POST("/register", h.Register)
 	apiGroup.POST("/login", h.Login)
+	apiGroup.POST("/register/partner", h.RegisterPartner)
+	apiGroup.POST("/login/partner", h.LoginPartner)
 }
 
 func (h *AuthHandler) Register(c echo.Context) error {
@@ -62,9 +65,37 @@ func (h *AuthHandler) Login(c echo.Context) error {
 }
 
 func (h *AuthHandler) RegisterPartner(c echo.Context) error {
-	return nil
+	var req buat_partner.Request
+
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(422, Response(422, err.Error()))
+	}
+
+	if err := h.authUsecase.RegisterPartner(c.Request().Context(), req); err != nil {
+		return c.JSON(400, Response(400, err.Error()))
+	}
+
+	return c.JSON(201, Response(201, "OK"))
 }
 
 func (h *AuthHandler) LoginPartner(c echo.Context) error {
-	return nil
+	type td struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	var data td
+
+	if err := c.Bind(&data); err != nil {
+		c.JSON(422, Response(422, err.Error()))
+	}
+
+	token, err := h.authUsecase.LoginPartner(c.Request().Context(), data.Email, data.Password)
+	if err != nil {
+		return c.JSON(400, Response(400, err.Error()))
+	}
+
+	return c.JSON(200, ResponseWithData(200, "OK", echo.Map{
+		"token": token,
+	}))
 }

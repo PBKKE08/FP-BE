@@ -4,16 +4,17 @@ import (
 	"context"
 	"github.com/PBKKE08/FP-BE/core/model/kategori"
 	"github.com/PBKKE08/FP-BE/core/model/kota"
+	"github.com/PBKKE08/FP-BE/core/model/partner"
 	"github.com/PBKKE08/FP-BE/core/repository"
 )
 
-type BuatUser struct {
-	PartnerRepo repository.Partner
+type BuatPartner struct {
+	PartnerRepo  repository.Partner
 	KotaRepo     repository.Kota
 	KategoriRepo repository.Kategori
 }
 
-func (u *BuatUser) Execute(ctx context.Context, req Request) error {
+func (u *BuatPartner) Execute(ctx context.Context, req Request) error {
 	kotaID, err := kota.NewIDFrom(req.KotaID)
 	if err != nil {
 		return err
@@ -34,5 +35,18 @@ func (u *BuatUser) Execute(ctx context.Context, req Request) error {
 		return err
 	}
 
-	err = u.PartnerRepo.
+	partnerData := partner.Partner{
+		ID:           partner.NewID(),
+		Nama:         req.Nama,
+		Email:        req.Email,
+		NomorTelepon: req.NomorTelepon,
+		JenisKelamin: req.JenisKelamin,
+		Kota:         kotaData,
+		Harga:        req.Harga,
+		Kategori:     kategoriData,
+	}
+
+	err = u.PartnerRepo.Save(ctx, partnerData)
+
+	return err
 }

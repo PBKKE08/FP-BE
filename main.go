@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/PBKKE08/FP-BE/api/command/beri_review"
 	"github.com/PBKKE08/FP-BE/api/command/buat_booking"
+	"github.com/PBKKE08/FP-BE/api/command/buat_partner"
 	"github.com/PBKKE08/FP-BE/api/command/buat_user"
 	"github.com/PBKKE08/FP-BE/api/handler"
 	"github.com/PBKKE08/FP-BE/api/usecase"
@@ -93,6 +94,7 @@ func main() {
 	kotaRepo := repository.NewKota(db)
 	txRepo := repository.NewTransactionRepository(db)
 	orderRepo := repository.NewOrderRepo(db)
+	kategoriRepo := repository.NewKategori(db)
 
 	queryInstance := query.NewQuery(db)
 	mailer := mailer.Mailer(mailer.SendEmail)
@@ -114,6 +116,12 @@ func main() {
 		KotaRepo:     kotaRepo,
 	}
 
+	buatPartnerCmd := buat_partner.BuatPartner{
+		PartnerRepo:  partnerRepo,
+		KotaRepo:     kotaRepo,
+		KategoriRepo: kategoriRepo,
+	}
+
 	buatBookingCmd := buat_booking.BuatBooking{
 		TransactionRepo: txRepo,
 		OrderRepo:       orderRepo,
@@ -124,7 +132,7 @@ func main() {
 	publicUsecase := usecase.NewPublicUsecase(queryInstance)
 	publicHandler := handler.NewPublicHandler(publicUsecase)
 
-	penggunaUsecase := usecase.NewPenggunaUsecase(queryInstance, &beriReviewCmd, queryInstance)
+	penggunaUsecase := usecase.NewPenggunaUsecase(queryInstance, &beriReviewCmd, queryInstance, queryInstance)
 	penggunaHandler := handler.NewPenggunaHandler(penggunaUsecase)
 
 	partnerUsecase := usecase.NewPartnerUsecase(queryInstance)
@@ -133,7 +141,7 @@ func main() {
 	bookingUsecase := usecase.NewBookingUsecase(&buatBookingCmd)
 	bookingHandler := handler.NewBookingHandler(bookingUsecase)
 
-	authUsecase := usecase.NewAuthUsecase(&buatUserCmd, authInstance, queryInstance, mailer, jwtProvider)
+	authUsecase := usecase.NewAuthUsecase(&buatUserCmd, authInstance, queryInstance, mailer, jwtProvider, &buatPartnerCmd, queryInstance)
 	authHandler := handler.NewAuthHandler(authUsecase)
 
 	server := echo.New()

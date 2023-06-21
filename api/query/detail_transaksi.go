@@ -1,6 +1,6 @@
 package query
 
-type SeluruhTransaksi struct {
+type DetailTransaksi struct {
 	OrderID        string `json:"order_id" db:"order_id"`
 	NamaPartner    string `json:"partner_name" db:"name"`
 	PartnerID      string `json:"partner_id" db:"partner_id"`
@@ -9,4 +9,7 @@ type SeluruhTransaksi struct {
 	Mulai          string `json:"start" db:"start_time"`
 	Selesai        string `json:"end" db:"end_time"`
 	OrderStatus    string `json:"order_status" db:"order_status"`
+	Harga          string `json:"price" db:"price"`
+	PaymentType    string `json:"payment_type" db:"payment_type"`
+	SudahDibayar   bool   `json:"is_paid" db:"is_paid"`
 }

@@ -50,3 +50,18 @@ func (r *PartnerRepository) ByID(ctx context.Context, id partner.ID) (partner.Pa
 
 	return result, nil
 }
+
+func (r *PartnerRepository) Save(ctx context.Context, p partner.Partner) error {
+	qr :=
+		`
+		INSERT INTO partners (id, name, email, telephone, gender, category_id, price, city_id, description, is_approved)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+		`
+
+	_, err := r.db.ExecContext(ctx, qr, p.ID, p.Nama, p.Email, p.NomorTelepon, p.JenisKelamin, p.Kategori.ID.String(), false)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

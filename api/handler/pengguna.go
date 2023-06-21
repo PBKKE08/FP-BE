@@ -21,14 +21,14 @@ func NewPenggunaHandler(p *usecase.PenggunaUsecase) *PenggunaHandler {
 
 func (h *PenggunaHandler) Load(e *echo.Echo) {
 	apiGroup := e.Group("/pengguna")
-
 	apiGroup.GET("/cari-pasangan", h.CariPasangan)
-	apiGroup.POST("/review", h.BeriReview)
 
 	privateGroup := e.Group("/penggunapriv")
 	privateGroup.Use(echojwt.WithConfig(jwtConfig))
 
 	privateGroup.GET("/history-transaksi", h.LihatTransaksi)
+	privateGroup.GET("/history-transaksi/:order_id", h.LihatDetailTransaksi)
+	privateGroup.GET("/review", h.BeriReview)
 }
 
 func (h *PenggunaHandler) CariPasangan(c echo.Context) error {
@@ -45,11 +45,16 @@ func (h *PenggunaHandler) CariPasangan(c echo.Context) error {
 }
 
 func (h *PenggunaHandler) BeriReview(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*customClaims)
+
 	var req command.BeriReviewRequest
 
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(422, Response(422, err.Error()))
 	}
+
+	req.PenggunaID = claims.ID
 
 	err := h.penggunaUsecase.ReviewPartner(c.Request().Context(), req)
 	if err != nil {
@@ -68,6 +73,18 @@ func (h *PenggunaHandler) LihatTransaksi(c echo.Context) error {
 	claims := user.Claims.(*customClaims)
 
 	results, err := h.penggunaUsecase.LihatRiwayaTransaksi(c.Request().Context(), claims.ID)
+
+	if err != nil {
+		return c.JSON(400, Response(400, err.Error()))
+	}
+
+	return c.JSON(200, ResponseWithData(200, "OK", results))
+}
+
+func (h *PenggunaHandler) LihatDetailTransaksi(c echo.Context) error {
+	id := c.Param("order_id")
+
+	results, err := h.penggunaUsecase.LihatDetailTransaksi(c.Request().Context(), id)
 
 	if err != nil {
 		return c.JSON(400, Response(400, err.Error()))
