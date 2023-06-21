@@ -18,6 +18,7 @@ func (h *AuthHandler) Load(e *echo.Echo) {
 	apiGroup := e.Group("/auth")
 
 	apiGroup.POST("/register", h.Register)
+	apiGroup.POST("/login", h.Login)
 }
 
 func (h *AuthHandler) Register(c echo.Context) error {
@@ -36,4 +37,26 @@ func (h *AuthHandler) Register(c echo.Context) error {
 	}
 
 	return c.JSON(201, Response(201, "Created"))
+}
+
+func (h *AuthHandler) Login(c echo.Context) error {
+	type td struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	var data td
+
+	if err := c.Bind(&data); err != nil {
+		c.JSON(422, Response(422, err.Error()))
+	}
+
+	token, err := h.authUsecase.Login(c.Request().Context(), data.Email, data.Password)
+	if err != nil {
+		return c.JSON(400, Response(400, err.Error()))
+	}
+
+	return c.JSON(200, ResponseWithData(200, "OK", echo.Map{
+		"token": token,
+	}))
 }

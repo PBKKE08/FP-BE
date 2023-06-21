@@ -14,7 +14,7 @@ var (
 )
 
 type CariPasanganQuery interface {
-	By(ctx context.Context, daerah string, jenisKelamin string) []query.CariPasangan
+	By(ctx context.Context, daerah string, jenisKelamin string, kebutuhan string) []query.CariPasangan
 }
 
 type BeriReviewCommand interface {
@@ -33,12 +33,12 @@ func NewPenggunaUsecase(cariPasanganQuery CariPasanganQuery, buatReviewCommand B
 	}
 }
 
-func (p *PenggunaUsecase) CariPasanganBerdasarkan(ctx context.Context, daerah string, jenisKelamin string) ([]query.CariPasangan, error) {
+func (p *PenggunaUsecase) CariPasanganBerdasarkan(ctx context.Context, daerah string, jenisKelamin string, kebutuhan string) ([]query.CariPasangan, error) {
 	if jenisKelamin != "" && !(jenisKelamin == "f" || jenisKelamin == "m") {
 		return []query.CariPasangan{}, ErrUnknownJenisKelamin
 	}
 
-	partners := p.cariPasanganQuery.By(ctx, daerah, jenisKelamin)
+	partners := p.cariPasanganQuery.By(ctx, daerah, jenisKelamin, kebutuhan)
 
 	return partners, nil
 }

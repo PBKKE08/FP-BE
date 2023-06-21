@@ -28,8 +28,9 @@ func (h *PenggunaHandler) Load(e *echo.Echo) {
 func (h *PenggunaHandler) CariPasangan(c echo.Context) error {
 	daerah := c.QueryParam("city")
 	jenisKelamin := c.QueryParam("gender")
+	kebutuhan := c.QueryParam("category")
 
-	result, err := h.penggunaUsecase.CariPasanganBerdasarkan(c.Request().Context(), daerah, jenisKelamin)
+	result, err := h.penggunaUsecase.CariPasanganBerdasarkan(c.Request().Context(), daerah, jenisKelamin, kebutuhan)
 	if err != nil {
 		return c.JSON(500, Response(500, err.Error()))
 	}

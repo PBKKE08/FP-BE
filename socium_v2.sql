@@ -23,12 +23,14 @@ CREATE TABLE partners (
   email VARCHAR(255) NOT NULL,
   telephone VARCHAR(20) NOT NULL,
   gender ENUM('f', 'm') NOT NULL,
+  category_id CHAR(36) NOT NULL,
   price VARCHAR(100) NOT NULL,
   city_id CHAR(36) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  CONSTRAINT fk_city FOREIGN KEY (city_id) REFERENCES cities(id)
+  FOREIGN KEY (city_id) REFERENCES cities(id),
+  FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
 CREATE TABLE reviews (
@@ -41,6 +43,12 @@ CREATE TABLE reviews (
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (partner_id) REFERENCES partners(id)
+);
+
+CREATE TABLE categories (
+  id CHAR(36) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  PRIMARY KEY(id)
 );
 
 INSERT INTO cities (id, name) VALUES ('4c2d8c23-573d-4f0e-9c1a-3d05f488f4e0', 'Bandung');
@@ -63,18 +71,18 @@ VALUES
     ('b5d5f7e7-46a7-4b3b-bb76-78289e9e372a', 'User 9', 'user9@example.com', '6667778888', 'm', '28b7b4c2-9f68-47e0-bd79-8a363fd98f13'),
     ('d2d0378e-660d-4e33-9c5c-5dcdaf3e92e4', 'User 10', 'user10@example.com', '3334445555', 'f', '58dd3448-0bb2-42f2-8542-0e15eb2a59fe');
 
-INSERT INTO partners (id, name, email, telephone, gender, price, city_id)
+INSERT INTO partners (id, name, email, telephone, gender, price, city_id, category_id)
 VALUES
-    ('68a9d8a7-646a-4a95-8b10-ee1fd3d3ee5e', 'Partner 1', 'partner1@example.com', '1234567890', 'm', '100', '4c2d8c23-573d-4f0e-9c1a-3d05f488f4e0'),
-    ('ef1371f9-c747-42f0-8e82-7a9d59ac135f', 'Partner 2', 'partner2@example.com', '0987654321', 'f', '200', '03b8552d-7905-4ce6-93c0-7d49538e5e0b'),
-    ('bae2c874-b144-45e0-b2ae-5300b06c64e3', 'Partner 3', 'partner3@example.com', '5555555555', 'm', '150', 'f9e2a5cf-198a-4c88-9926-79ae5f44f7d2'),
-    ('9a96b015-06ff-4e0f-8c25-cb775e36fe07', 'Partner 4', 'partner4@example.com', '9876543210', 'f', '300', '28b7b4c2-9f68-47e0-bd79-8a363fd98f13'),
-    ('d1da7b0c-791e-4f7a-8a55-6e43ad0a7d4a', 'Partner 5', 'partner5@example.com', '1112223333', 'm', '250', '58dd3448-0bb2-42f2-8542-0e15eb2a59fe'),
-    ('1e4ed79a-7c9e-4c7b-9b9f-9d86cc6c7c2d', 'Partner 6', 'partner6@example.com', '4445556666', 'f', '400', '4c2d8c23-573d-4f0e-9c1a-3d05f488f4e0'),
-    ('dcaad68f-2c32-4d9c-81e6-1877f3ac8314', 'Partner 7', 'partner7@example.com', '7778889999', 'm', '350', '03b8552d-7905-4ce6-93c0-7d49538e5e0b'),
-    ('42e68281-d8a0-4a39-968b-11e3ac3f99cd', 'Partner 8', 'partner8@example.com', '2223334444', 'f', '500', 'f9e2a5cf-198a-4c88-9926-79ae5f44f7d2'),
-    ('6dd485be-cc1c-4d88-91e0-f960e7ef83f5', 'Partner 9', 'partner9@example.com', '6667778888', 'm', '450', '28b7b4c2-9f68-47e0-bd79-8a363fd98f13'),
-    ('cd14509d-0325-4a8d-9e58-ff59db2cfd4c', 'Partner 10', 'partner10@example.com', '3334445555', 'f', '600', '58dd3448-0bb2-42f2-8542-0e15eb2a59fe');
+    ('68a9d8a7-646a-4a95-8b10-ee1fd3d3ee5e', 'Partner 1', 'partner1@example.com', '1234567890', 'm', '100', '4c2d8c23-573d-4f0e-9c1a-3d05f488f4e0', '4f150d84-2b5d-4cb6-82f1-73491df2407b'),
+    ('ef1371f9-c747-42f0-8e82-7a9d59ac135f', 'Partner 2', 'partner2@example.com', '0987654321', 'f', '200', '03b8552d-7905-4ce6-93c0-7d49538e5e0b', '4f150d84-2b5d-4cb6-82f1-73491df2407c'),
+    ('bae2c874-b144-45e0-b2ae-5300b06c64e3', 'Partner 3', 'partner3@example.com', '5555555555', 'm', '150', 'f9e2a5cf-198a-4c88-9926-79ae5f44f7d2', '4f150d84-2b5d-4cb6-82f1-73491df2407d'),
+    ('9a96b015-06ff-4e0f-8c25-cb775e36fe07', 'Partner 4', 'partner4@example.com', '9876543210', 'f', '300', '28b7b4c2-9f68-47e0-bd79-8a363fd98f13', '4f150d84-2b5d-4cb6-82f1-73491df2407e'),
+    ('d1da7b0c-791e-4f7a-8a55-6e43ad0a7d4a', 'Partner 5', 'partner5@example.com', '1112223333', 'm', '250', '58dd3448-0bb2-42f2-8542-0e15eb2a59fe', '4f150d84-2b5d-4cb6-82f1-73491df2407b'),
+    ('1e4ed79a-7c9e-4c7b-9b9f-9d86cc6c7c2d', 'Partner 6', 'partner6@example.com', '4445556666', 'f', '400', '4c2d8c23-573d-4f0e-9c1a-3d05f488f4e0', '4f150d84-2b5d-4cb6-82f1-73491df2407c'),
+    ('dcaad68f-2c32-4d9c-81e6-1877f3ac8314', 'Partner 7', 'partner7@example.com', '7778889999', 'm', '350', '03b8552d-7905-4ce6-93c0-7d49538e5e0b', '4f150d84-2b5d-4cb6-82f1-73491df2407d'),
+    ('42e68281-d8a0-4a39-968b-11e3ac3f99cd', 'Partner 8', 'partner8@example.com', '2223334444', 'f', '500', 'f9e2a5cf-198a-4c88-9926-79ae5f44f7d2', '4f150d84-2b5d-4cb6-82f1-73491df2407e'),
+    ('6dd485be-cc1c-4d88-91e0-f960e7ef83f5', 'Partner 9', 'partner9@example.com', '6667778888', 'm', '450', '28b7b4c2-9f68-47e0-bd79-8a363fd98f13', '4f150d84-2b5d-4cb6-82f1-73491df2407c'),
+    ('cd14509d-0325-4a8d-9e58-ff59db2cfd4c', 'Partner 10', 'partner10@example.com', '3334445555', 'f', '600', '58dd3448-0bb2-42f2-8542-0e15eb2a59fe', '4f150d84-2b5d-4cb6-82f1-73491df2407e');
 
 
 INSERT INTO reviews (id, user_id, partner_id, rating, comment)

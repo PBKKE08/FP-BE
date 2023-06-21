@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/jordan-wright/email"
+	"github.com/rs/zerolog/log"
 	"net/smtp"
 )
 
@@ -17,22 +18,27 @@ var (
 
 func SetIdentity(s string) {
 	identity = ""
+	log.Info().Msgf("Set identity to %s", s)
 }
 
 func SetEmailServerURI(s string) {
 	emailServerURI = s
+	log.Info().Msgf("Set email server URI to %s", s)
 }
 
 func SetUsername(s string) {
 	username = s
+	log.Info().Msgf("Set username to %s", s)
 }
 
 func SetPassword(s string) {
 	password = s
+	log.Info().Msgf("Set password to %s", s)
 }
 
 func SetHost(s string) {
 	host = s
+	log.Info().Msgf("Set host to %s", s)
 }
 
 type Mailer func(ctx context.Context, from, to, subject, body string) error

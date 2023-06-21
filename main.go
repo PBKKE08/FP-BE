@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"flag"
+	"fmt"
 	"github.com/PBKKE08/FP-BE/api/command/beri_review"
 	"github.com/PBKKE08/FP-BE/api/command/buat_user"
 	"github.com/PBKKE08/FP-BE/api/handler"
@@ -10,6 +12,7 @@ import (
 	"github.com/PBKKE08/FP-BE/infra/mailer"
 	"github.com/PBKKE08/FP-BE/infra/query"
 	"github.com/PBKKE08/FP-BE/infra/repository"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4/middleware"
 	"google.golang.org/api/option"
 	"net/http"
@@ -42,8 +45,16 @@ const maxShutdownTimeout = 1 * time.Minute
 var config Config
 
 func init() {
+	var isProd bool
+
+	flag.BoolVar(&isProd, "dev", true, "Specify if the project is in production mode")
+
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+
+	if !isProd {
+		godotenv.Load()
+	}
 
 	err := pkg.FillEnv(&config)
 	if err != nil {
@@ -64,6 +75,11 @@ func main() {
 		}
 	}()
 
+	mailer.SetHost(config.MailHost)
+	mailer.SetUsername(config.MailUsername)
+	mailer.SetPassword(config.MailPassword)
+	mailer.SetEmailServerURI(fmt.Sprintf("%s:%d", config.MailHost, config.MailPort))
+
 	opt := option.WithCredentialsFile("sak.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
@@ -76,6 +92,7 @@ func main() {
 	reviewRepo := repository.NewReviewRepository(db)
 	kotaRepo := repository.NewKota(db)
 	mailer := mailer.Mailer(mailer.SendEmail)
+	jwtProvider := authentication.JWTProvider(authentication.GenerateToken)
 
 	authInstance, err := authentication.NewFirebaseAuth(app)
 	if err != nil {
@@ -96,11 +113,13 @@ func main() {
 	penggunaUsecase := usecase.NewPenggunaUsecase(queryInstance, &beriReviewCmd)
 	penggunaHandler := handler.NewPenggunaHandler(penggunaUsecase)
 
-	authUsecase := usecase.NewAuthUsecase(&buatUserCmd, authInstance, mailer)
+	authUsecase := usecase.NewAuthUsecase(&buatUserCmd, authInstance, queryInstance, mailer, jwtProvider)
 	authHandler := handler.NewAuthHandler(authUsecase)
 
 	server := echo.New()
+	server.Use(middleware.CORS())
 	server.Use(middleware.Recover())
+
 	penggunaHandler.Load(server)
 	authHandler.Load(server)
 
