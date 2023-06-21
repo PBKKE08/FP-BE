@@ -17,6 +17,7 @@ func (h *AdminHandler) Load(e *echo.Echo) {
 	apiGroup := e.Group("/admin")
 
 	apiGroup.GET("/pendaftar", h.GetAllPendaftar)
+	apiGroup.GET("/tx", h.GetDaftarTxNonConfirmed)
 	apiGroup.PATCH("/terima", h.Terima)
 	apiGroup.PATCH("/tolak", h.Tolak)
 }
@@ -48,4 +49,9 @@ func (h *AdminHandler) Terima(c echo.Context) error {
 	}
 
 	return c.JSON(200, Response(200, "OK"))
+}
+
+func (h *AdminHandler) GetDaftarTxNonConfirmed(c echo.Context) error {
+	results := h.adminUsecase.DaftarTxNonConfirmed(c.Request().Context())
+	return c.JSON(200, ResponseWithData(200, "OK", results))
 }

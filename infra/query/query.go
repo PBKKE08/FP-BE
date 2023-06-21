@@ -440,3 +440,40 @@ func (q *Query) GetListPendaftar(ctx context.Context) []query.PartnerInginMendaf
 
 	return results
 }
+
+func (q *Query) DaftarTransaksiNonConfirmed(ctx context.Context) []query.TransaksiNonTerbayar {
+	var results []query.TransaksiNonTerbayar
+
+	qr := `
+		SELECT
+		  u.name as booker_name,
+		  p.id as partner_id,
+		  p.email partner_email,
+		  p.name as partner_name,
+		  o.booking_day as booking_date,
+		  o.time_start as time_start,
+		  o.time_end as time_end,
+		  t.id as tx_id,
+		  t.price as tx_price,
+		  t.payment_type as payment_type
+		FROM
+		  partners p
+		  JOIN orders o ON o.partners_id = p.id
+		  JOIN users u ON o.user_id = u.id
+		  JOIN transactions t on o.id = t.order_id
+		WHERE
+		  t.paid_at is NULL;
+	`
+
+	rows, _ := q.db.QueryxContext(ctx, qr)
+	defer rows.Close()
+
+	for rows.Next() {
+		var result query.TransaksiNonTerbayar
+		rows.StructScan(&result)
+
+		results = append(results, result)
+	}
+
+	return results
+}

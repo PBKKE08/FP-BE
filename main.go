@@ -149,7 +149,7 @@ func main() {
 	authUsecase := usecase.NewAuthUsecase(&buatUserCmd, authInstance, queryInstance, mailer, jwtProvider, &buatPartnerCmd, queryInstance)
 	authHandler := handler.NewAuthHandler(authUsecase)
 
-	adminUsecase := usecase.NewAdminUsecase(queryInstance, &tolakPartnerCmd, &terimaPartnerCmd, authInstance)
+	adminUsecase := usecase.NewAdminUsecase(queryInstance, &tolakPartnerCmd, &terimaPartnerCmd, queryInstance, authInstance)
 	adminHandler := handler.NewAdminHandler(adminUsecase)
 
 	server := echo.New()

@@ -17,24 +17,35 @@ type DaftarListPendaftarQuery interface {
 	GetListPendaftar(ctx context.Context) []query.PartnerInginMendaftar
 }
 
+type TransaksiNonConfirmedQuery interface {
+	DaftarTransaksiNonConfirmed(ctx context.Context) []query.TransaksiNonTerbayar
+}
+
 type AdminAuthProvider interface {
 	ApprovedAcc(ctx context.Context, email string) error
 	DeleteAcc(ctx context.Context, email string) error
 }
 
 type AdminUsecase struct {
-	getListPendaftar DaftarListPendaftarQuery
-	tolakPartner     TolakPartnerCommand
-	terimaPartner    TerimaPartnerCommand
-	authProvider     AdminAuthProvider
+	getListPendaftar      DaftarListPendaftarQuery
+	tolakPartner          TolakPartnerCommand
+	terimaPartner         TerimaPartnerCommand
+	transaksiNonConfirmed TransaksiNonConfirmedQuery
+	authProvider          AdminAuthProvider
 }
 
 func NewAdminUsecase(
 	getListPendaftar DaftarListPendaftarQuery,
 	tolakPartner TolakPartnerCommand,
 	terimaPartner TerimaPartnerCommand,
+	confirmedQuery TransaksiNonConfirmedQuery,
 	authProvider AdminAuthProvider) *AdminUsecase {
-	return &AdminUsecase{getListPendaftar: getListPendaftar, tolakPartner: tolakPartner, terimaPartner: terimaPartner, authProvider: authProvider}
+	return &AdminUsecase{
+		getListPendaftar:      getListPendaftar,
+		tolakPartner:          tolakPartner,
+		terimaPartner:         terimaPartner,
+		authProvider:          authProvider,
+		transaksiNonConfirmed: confirmedQuery}
 }
 
 func (a *AdminUsecase) GetPartnerYangInginMendaftar(ctx context.Context) []query.PartnerInginMendaftar {
@@ -67,4 +78,8 @@ func (a *AdminUsecase) TolakPartnerPendaftar(ctx context.Context, id string, ema
 	}
 
 	return nil
+}
+
+func (a *AdminUsecase) DaftarTxNonConfirmed(ctx context.Context) []query.TransaksiNonTerbayar {
+	return a.transaksiNonConfirmed.DaftarTransaksiNonConfirmed(ctx)
 }
