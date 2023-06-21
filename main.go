@@ -124,8 +124,11 @@ func main() {
 	publicUsecase := usecase.NewPublicUsecase(queryInstance)
 	publicHandler := handler.NewPublicHandler(publicUsecase)
 
-	penggunaUsecase := usecase.NewPenggunaUsecase(queryInstance, &beriReviewCmd)
+	penggunaUsecase := usecase.NewPenggunaUsecase(queryInstance, &beriReviewCmd, queryInstance)
 	penggunaHandler := handler.NewPenggunaHandler(penggunaUsecase)
+
+	partnerUsecase := usecase.NewPartnerUsecase(queryInstance)
+	partnerHandler := handler.NewPartnerHandler(partnerUsecase)
 
 	bookingUsecase := usecase.NewBookingUsecase(&buatBookingCmd)
 	bookingHandler := handler.NewBookingHandler(bookingUsecase)
@@ -141,6 +144,7 @@ func main() {
 	penggunaHandler.Load(server)
 	authHandler.Load(server)
 	publicHandler.Load(server)
+	partnerHandler.Load(server)
 
 	go func() {
 		if err := server.Start(":" + config.ServerPort); err != nil && err != http.ErrServerClosed {

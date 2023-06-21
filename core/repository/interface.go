@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/PBKKE08/FP-BE/core/model/booking/order"
 	"github.com/PBKKE08/FP-BE/core/model/booking/transaction"
+	"github.com/PBKKE08/FP-BE/core/model/kategori"
 	"github.com/PBKKE08/FP-BE/core/model/kota"
 	"github.com/PBKKE08/FP-BE/core/model/review"
 
@@ -18,6 +19,7 @@ type Pengguna interface {
 
 type Partner interface {
 	ByID(ctx context.Context, id partner.ID) (partner.Partner, error)
+	Save(ctx context.Context, user partner.Partner) error
 }
 
 type Kota interface {
@@ -35,4 +37,8 @@ type Transaction interface {
 type Order interface {
 	ByID(ctx context.Context, id order.ID) (order.Order, error)
 	Save(ctx context.Context, order order.Order) error
+}
+
+type Kategori interface {
+	ByID(ctx context.Context, id kategori.ID) (kategori.Kategori, error)
 }

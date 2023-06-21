@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/PBKKE08/FP-BE/api/query"
 	"github.com/PBKKE08/FP-BE/core/model/partner"
+	"github.com/PBKKE08/FP-BE/core/model/pengguna"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -256,7 +257,7 @@ func (q *Query) GetAllCityAndCategory(ctx context.Context) query.AllCitiesAndCat
 	return all
 }
 
-func (q *Query) GetPartnerDetail(ctx context.Context, id partner.ID) (query.DetailPartner, error) {
+func (q *Query) LihatPartnerDetail(ctx context.Context, id partner.ID) (query.DetailPartner, error) {
 	qr := `
 		SELECT
 		  p.id as id,
@@ -297,4 +298,53 @@ func (q *Query) GetPartnerDetail(ctx context.Context, id partner.ID) (query.Deta
 	}
 
 	return detailPartner, nil
+}
+
+func (q *Query) LihatTransaksi(ctx context.Context, id pengguna.ID) ([]query.SeluruhTransaksi, error) {
+	var results []query.SeluruhTransaksi
+
+	qr := `
+		SELECT 
+		p.name, 
+		c.name as cat_name, 
+		o.booking_day as booking_date, 
+		o.time_start as start_time, 
+		o.time_end as end_time,
+		CASE 
+			WHEN o.booking_day < curdate() THEN 1
+			WHEN o.booking_day = curdate() AND o.time_end > curtime() THEN 1
+			WHEN o.booking_day = curdate() AND o.time_start > curtime() AND o.time_end < curtime() THEN 2
+			WHEN o.booking_day = curdate() AND o.time_start < curtime() THEN 3
+			ELSE 3
+		END AS order_status
+		
+		FROM partners p
+		
+		JOIN categories c
+		ON p.category_id = c.id
+		
+		JOIN orders o
+		ON p.id = o.partners_id
+		
+		WHERE o.user_id = ?;
+		`
+
+	rows, err := q.db.QueryxContext(ctx, qr, id.String())
+	if err != nil {
+		return results, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var qq query.SeluruhTransaksi
+
+		if err := rows.StructScan(&qq); err != nil {
+			return results, err
+		}
+
+		results = append(results, qq)
+	}
+
+	return results, err
 }

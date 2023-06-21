@@ -64,5 +64,5 @@ func (h *BookingHandler) BookPartner(c echo.Context) error {
 		return c.JSON(400, Response(400, err.Error()))
 	}
 
-	return nil
+	return c.JSON(200, Response(200, "OK"))
 }

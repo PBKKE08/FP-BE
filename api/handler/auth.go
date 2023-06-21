@@ -60,3 +60,11 @@ func (h *AuthHandler) Login(c echo.Context) error {
 		"token": token,
 	}))
 }
+
+func (h *AuthHandler) RegisterPartner(c echo.Context) error {
+	return nil
+}
+
+func (h *AuthHandler) LoginPartner(c echo.Context) error {
+	return nil
+}

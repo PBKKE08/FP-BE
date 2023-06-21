@@ -1,6 +1,9 @@
 package partner
 
-import "github.com/PBKKE08/FP-BE/core/model/kota"
+import (
+	"github.com/PBKKE08/FP-BE/core/model/kategori"
+	"github.com/PBKKE08/FP-BE/core/model/kota"
+)
 
 type Partner struct {
 	ID           ID
@@ -10,4 +13,5 @@ type Partner struct {
 	JenisKelamin string
 	Kota         kota.Kota
 	Harga        string
+	Kategori     kategori.Kategori
 }
